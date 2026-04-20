@@ -24,6 +24,9 @@ class FakeLLM:
     def __init__(self, model: str = "claude-sonnet-4-5") -> None:
         self.model = model
 
+    from .tracing import observe
+
+    @observe()
     def generate(self, prompt: str) -> FakeResponse:
         time.sleep(0.15)
         input_tokens = max(20, len(prompt) // 4)
