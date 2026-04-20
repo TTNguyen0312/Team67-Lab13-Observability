@@ -79,8 +79,9 @@
 - [EVIDENCE_LINK]: commit `058ef9b` - "load_test: add load test and incident injection evidence with screenshots"
 
 ### Nguyễn Thị Ngọc
-- [TASKS_COMPLETED]: Performed incident injection testing, verified log compliance using `validate_logs.py`, and compiled the final report.
-- [EVIDENCE_LINK]: commit `fdfe925` - "write blueprint"
+- [TASKS_COMPLETED]: Performed incident injection testing, verified log compliance using `validate_logs.py`, write blueprint, write BONUS_COST_OPTIMIZATION, create demo plan, test/log/images(alerts rule, 6 dashboards, trace, trace waterfall) and compiled the final report.
+- [EVIDENCE_LINK]: commit `4dc63da` - "write blueprint,correlation_id,pii_redaction", commit 'fc5d20f' - create demo plan & BONUS_COST_OPTIMIZATION, commit'f0b969b' - alerts rule, commit '44fe79f' - 6 dashboards, commit 'ad60a83,e882bdf' - trace, trace waterfall
+ 
 
 ---
 
