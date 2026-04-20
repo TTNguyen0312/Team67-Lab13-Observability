@@ -67,8 +67,12 @@
 
 
 ### Vũ Đức Minh
-- [TASKS_COMPLETED]: Defined SLIs/SLOs in `slo.yaml` and created detailed runbooks for all 5 major alert categories in `docs/alerts.md`.
-- [EVIDENCE_LINK]: commit `a5c1fd2` - "slo-alert"
+- [TASKS_COMPLETED]: 
+  - Defined SLIs/SLOs in `config/slo.yaml` based on observed system behavior from load testing (latency ~10–13s under concurrency).
+  - Implemented alert rules in `config/alert_rules.yaml` for latency, error, cost, and quality, aligned with defined SLO thresholds.
+  - Developed detailed runbooks in `docs/alerts.md` including root cause verification and recovery steps.
+
+- [EVIDENCE_LINK]: commit `a5c1fd21a731e97eabc5c7ba94105ce77f469c11` - "slo-alert"
 
 ### Trương Quang Lộc
 - [TASKS_COMPLETED]: Developed the load testing script `scripts/load_test.py` and designed the 6-panel monitoring dashboard.
