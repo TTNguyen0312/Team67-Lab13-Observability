@@ -1,40 +1,86 @@
 # Alert Rules and Runbooks
 
-## 1. High latency P95
+## 1. High Latency P95
 - Severity: P2
-- Trigger: `latency_p95_ms > 5000 for 30m`
-- Impact: tail latency breaches SLO
-- First checks:
-  1. Open top slow traces in the last 1h
-  2. Compare RAG span vs LLM span
-  3. Check if incident toggle `rag_slow` is enabled
-- Mitigation:
-  - truncate long queries
-  - fallback retrieval source
-  - lower prompt size
+- Condition: latency_p95 > 1000 for 5m
+- Meaning: Most requests are slower than expected, likely due to retrieval slowdown or downstream bottlenecks.
+- Likely causes:
+  - rag_slow incident enabled
+  - increased concurrency
+  - slow tool or vector store
+- Verification:
+  - check metrics snapshot: latency_p95, latency_p99
+  - inspect logs for high latency_ms in response_sent events
+  - (if enabled) inspect traces for slow retrieval span
+- Immediate action:
+  - confirm whether rag_slow incident was injected
+  - reduce load (lower concurrency)
+  - isolate slow component (RAG / tool)
 
-## 2. High error rate
+---
+
+## 2. Critical Latency P99
 - Severity: P1
-- Trigger: `error_rate_pct > 5 for 5m`
-- Impact: users receive failed responses
-- First checks:
-  1. Group logs by `error_type`
-  2. Inspect failed traces
-  3. Determine whether failures are LLM, tool, or schema related
-- Mitigation:
-  - rollback latest change
-  - disable failing tool
-  - retry with fallback model
+- Condition: latency_p99 > 2000 for 5m
+- Meaning: Tail latency is severely degraded (worst-case requests are very slow).
+- Likely causes:
+  - extreme slowdown in RAG or LLM
+  - uneven load distribution
+- Verification:
+  - compare latency_p95 vs latency_p99 (if p99 >> p95 → tail issue)
+  - inspect slowest requests in logs
+- Immediate action:
+  - identify worst-case requests
+  - check if incident (rag_slow) is active
+  - reduce concurrency or disable incident
 
-## 3. Cost budget spike
+---
+
+## 3. Tool or Pipeline Errors
+- Severity: P1
+- Condition: total_error_count > 0 for 2m
+- Meaning: Requests are failing due to tool or pipeline issues.
+- Likely causes:
+  - tool_fail incident
+  - vector store or tool exception
+- Verification:
+  - inspect error_breakdown in metrics snapshot
+  - inspect logs for error events
+- Immediate action:
+  - identify failing component from error type
+  - disable failing incident or restart component
+  - re-run test to confirm recovery
+
+---
+
+## 4. Cost Budget Spike
 - Severity: P2
-- Trigger: `hourly_cost_usd > 2x_baseline for 15m`
-- Impact: burn rate exceeds budget
-- First checks:
-  1. Split traces by feature and model
-  2. Compare tokens_in/tokens_out
-  3. Check if `cost_spike` incident was enabled
-- Mitigation:
-  - shorten prompts
-  - route easy requests to cheaper model
-  - apply prompt cache
+- Condition: total_cost_usd > 2.5
+- Meaning: Token spending exceeds expected lab budget.
+- Likely causes:
+  - cost_spike incident
+  - excessive output tokens
+- Verification:
+  - check tokens_out_total and avg_cost_usd
+  - compare before/after incident
+- Immediate action:
+  - reduce output length (max tokens)
+  - inspect prompt causing verbose output
+  - confirm if cost_spike scenario is active
+
+---
+
+## 5. Quality Drop
+- Severity: P2
+- Condition: quality_avg < 0.75 for 10m
+- Meaning: Answers are becoming less useful or less accurate.
+- Likely causes:
+  - degraded prompt quality
+  - RAG returning irrelevant context
+- Verification:
+  - inspect recent responses in logs
+  - compare quality score trend
+- Immediate action:
+  - review recent answers manually
+  - check RAG relevance
+  - adjust prompt or context retrieval
