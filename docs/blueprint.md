@@ -77,8 +77,8 @@
 - [EVIDENCE_LINK]: commit `a5c1fd21a731e97eabc5c7ba94105ce77f469c11` - "slo-alert"
 
 ### Trương Quang Lộc
-- [TASKS_COMPLETED]: Developed the load testing script `scripts/load_test.py` and designed the 6-panel monitoring dashboard.
-- [EVIDENCE_LINK]: commit `058ef9b` - "load_test: add load test and incident injection evidence with screenshots"
+- [TASKS_COMPLETED]: Ran each scenario and recorded the resulting latency spikes (~7970ms for `rag_slow`), HTTP 500 error storms (`tool_fail`), and token/cost inflation (`cost_spike`) in `docs/grading-evidence.md`. **Grading Evidence Compilation** (`docs/grading-evidence.md` + 11 screenshots): Documented all load-test runs and incident-injection results with terminal output and `/metrics` snapshots, providing the full evidence trail for the instructor: baseline, concurrent, `rag_slow`, `tool_fail`, and `cost_spike` scenarios.
+- [EVIDENCE_LINK]: commit `058ef9b` - "load_test: add load test and incident injection evidence with screenshots", commit `014e83d` - "fix: update team member roles and correct image file extensions in blueprint report"
 
 ### Nguyễn Thị Ngọc
 - [TASKS_COMPLETED]: Demo lead, Performed incident injection testing, verified log compliance using `validate_logs.py`, write blueprint, write BONUS_COST_OPTIMIZATION, create demo define steps, test/log/images(alerts rule, 6 dashboards, trace, trace waterfall) and compiled the final report.
