@@ -81,3 +81,19 @@
 - [BONUS_COST_OPTIMIZATION]: (Description + Evidence)
 - [BONUS_AUDIT_LOGS]: (Description + Evidence)
 - [BONUS_CUSTOM_METRIC]: (Description + Evidence)
+
+# Kịch bản 1: RAG bị chậm → latency tăng vọt
+python scripts/inject_incident.py --scenario rag_slow
+python scripts/load_test.py
+
+# Kịch bản 2: Tool bị lỗi → error rate tăng vọt
+python scripts/inject_incident.py --scenario tool_fail
+python scripts/load_test.py
+
+# Kịch bản 3: Cost spike → cost tăng đột biến
+python scripts/inject_incident.py --scenario cost_spike
+python scripts/load_test.py
+
+python scripts/inject_incident.py --scenario rag_slow --disable
+python scripts/inject_incident.py --scenario tool_fail --disable
+python scripts/inject_incident.py --scenario cost_spike --disable
