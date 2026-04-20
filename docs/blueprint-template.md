@@ -10,7 +10,7 @@
   - Member B: [Nguyễn Trọng Tiến] | Role: Tracing & Enrichment
   - Member C: [Vũ Đức Minh] | Role: SLO & Alerts
   - Member D: [Trương Quang Lộc & Nguyễn Việt Quang] | Role: Load Test & Dashboard
-  - Member E: [Nguyễn Thị Ngọc] | Role: BlueprintDemo & Report
+  - Member E: [Nguyễn Thị Ngọc] | Role: Blueprint & Demo & Report
 
 ---
 
@@ -26,7 +26,7 @@
 ### 3.1 Logging & Tracing
 - [EVIDENCE_CORRELATION_ID_SCREENSHOT]: docs/images/correlation_id.png
 - [EVIDENCE_PII_REDACTION_SCREENSHOT]: docs/images/pii_redaction.png
-- [EVIDENCE_TRACE_WATERFALL_SCREENSHOT]: docs/images/trace_waterfall.png
+- [EVIDENCE_TRACE_WATERFALL_SCREENSHOT]: docs/images/trace_waterfall1.png , docs/images/trace_waterfall2.png
 - [TRACE_WATERFALL_EXPLANATION]: One interesting span is the `retrieve` function. In the waterfall, it accounts for nearly 85% of total latency during the `rag_slow` incident, clearly isolating the bottleneck to our vector store mock logic.
 
 ### 3.2 Dashboard & SLOs
