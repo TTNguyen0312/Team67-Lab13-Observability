@@ -6,31 +6,33 @@
 - [GROUP_NAME]: Team 67
 - [REPO_URL]: https://github.com/TTNguyen0312/Team67-Lab13-Observability
 - [MEMBERS]:
-  - Member A: [Nguyễn Việt Quang] | Role: Logging & PII
+  - Member A: [Nguyễn Việt Quang] | Role: Logging & PII & Dashboard
   - Member B: [Nguyễn Trọng Tiến] | Role: Tracing & Enrichment
   - Member C: [Vũ Đức Minh] | Role: SLO & Alerts
-  - Member D: [Trương Quang Lộc] | Role: Load Test & Dashboard
+  - Member D: [Trương Quang Lộc] | Role: Load Test & Blueprint
   - Member E: [Nguyễn Thị Ngọc] | Role: Blueprint & Demo lead & Report
 
 ---
 
 ## 2. Group Performance (Auto-Verified)
-- [VALIDATE_LOGS_FINAL_SCORE]: 100/100
-- [TOTAL_TRACES_COUNT]: 25
-- [PII_LEAKS_FOUND]: 0
+- [VALIDATE_LOGS_FINAL_SCORE]: /100
+- [TOTAL_TRACES_COUNT]: 
+- [PII_LEAKS_FOUND]:
 
 ---
 
 ## 3. Technical Evidence (Group)
-
+- [baseline_cmd.png](screenshots/baseline_cmd.png)
 ### 3.1 Logging & Tracing
-- [EVIDENCE_CORRELATION_ID_SCREENSHOT]: docs/images/correlation_id.jpg
-- [EVIDENCE_PII_REDACTION_SCREENSHOT]: docs/images/pii_redaction.jpg
-- [EVIDENCE_TRACE_WATERFALL_SCREENSHOT]: docs/images/trace_waterfall1.jpg , docs/images/trace_waterfall2.jpg
+- [EVIDENCE_CORRELATION_ID_SCREENSHOT]: [../docs/images/correlation_id.jpg]
+- [EVIDENCE_PII_REDACTION_SCREENSHOT]: [..docs/images/pii_redaction.jpg]
+- [EVIDENCE_TRACE_WATERFALL_SCREENSHOT1]: [../docs/images/trace_waterfall1.jpg]
+- [EVIDENCE_TRACE_WATERFALL_SCREENSHOT2]: [../docs/images/trace_waterfall2.jpg)]
+
 - [TRACE_WATERFALL_EXPLANATION]: One interesting span is the `retrieve` function. In the waterfall, it accounts for nearly 85% of total latency during the `rag_slow` incident, clearly isolating the bottleneck to our vector store mock logic.
 
 ### 3.2 Dashboard & SLOs
-- [DASHBOARD_6_PANELS_SCREENSHOT]: docs/images/dashboard.jpg
+- [DASHBOARD_6_PANELS_SCREENSHOT]: [../docs/images/dashboard.jpg]
 - [SLO_TABLE]:
 | SLI | Target | Window | Current Value |
 |---|---:|---|---:|
@@ -41,8 +43,8 @@
 | Quality Avg | ≥ 0.75 | 28d | 0.81 |
 
 ### 3.3 Alerts & Runbook
-- [ALERT_RULES_SCREENSHOT]: docs/images/alerts.jpg
-- [SAMPLE_RUNBOOK_LINK]: [docs/alerts.md#1-high-latency-p95](https://github.com/TTNguyen0312/Team67-Lab13-Observability/blob/main/docs/alerts.md#L3)
+- [ALERT_RULES_SCREENSHOT]: [../docs/images/alerts.jpg]
+- [SAMPLE_RUNBOOK_LINK]: [https://github.com/TTNguyen0312/Team67-Lab13-Observability/blob/main/docs/alerts.md#L3]
 
 ---
 
