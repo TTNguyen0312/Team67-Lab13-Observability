@@ -60,8 +60,9 @@
 - [EVIDENCE_LINK]: commit `a1b2c3d4` - "feat: implement pii scrubbing and json logging"
 
 ### Nguyễn Trọng Tiến
-- [TASKS_COMPLETED]: Integrated Langfuse tracing using the `@observe` decorator and enriched logs with session_id and user_id context.
-- [EVIDENCE_LINK]: commit `e5f6g7h8` - "feat: add tracing and log enrichment"
+- [TASKS_COMPLETED]: Implemented the full Langfuse tracing layer for the agent pipeline. Wired the `@observe` decorator onto `LabAgent.run()` to auto-capture spans, then extracted three clean helper functions — `tag_trace`, `set_trace_user`, and `annotate_observation` into `app/tracing.py` so that all enrichment logic is reusable. Refactored `app/agent.py` to call these helpers instead of reaching directly into `langfuse_context`. Also upgraded the no-op `_DummyContext` fallback to emit `DEBUG`-level log lines so trace calls are observable even when Langfuse is unavailable, and added `langfuse` to `requirements.txt` to make the dependency explicit.
+- [EVIDENCE_LINK]: commit `4711169baf1d7c56cc6c09cbcb82b732c71cbc10` - "add: tracing and tags". 
+
 
 ### Vũ Đức Minh
 - [TASKS_COMPLETED]: Defined SLIs/SLOs in `slo.yaml` and created detailed runbooks for all 5 major alert categories in `docs/alerts.md`.
