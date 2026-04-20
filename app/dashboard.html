@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0f1117;
+            color: #e0e0e0;
+            min-height: 100vh;
+        }
+
+        header {
+            background: linear-gradient(135deg, #1a1d2e 0%, #0f1117 100%);
+            border-bottom: 1px solid #2a2d3e;
+            padding: 20px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h1 {
+            font-size: 22px;
+            font-weight: 700;
+            background: linear-gradient(90deg, #6c63ff, #48cfad);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header-meta {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            font-size: 13px;
+            color: #888;
+        }
+
+        .status-badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: #1a2332;
+            border: 1px solid #2a3a4e;
+            border-radius: 20px;
+            padding: 5px 14px;
+            font-size: 12px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #48cfad;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.4;
+            }
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            padding: 24px 32px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .panel {
+            background: #1a1d2e;
+            border: 1px solid #2a2d3e;
+            border-radius: 12px;
+            padding: 20px;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .panel:hover {
+            border-color: #6c63ff44;
+            box-shadow: 0 4px 24px rgba(108, 99, 255, 0.08);
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .panel-title {
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #888;
+        }
+
+        .panel-unit {
+            font-size: 11px;
+            color: #555;
+            background: #0f1117;
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+
+        .big-number {
+            font-size: 48px;
+            font-weight: 700;
+            text-align: center;
+            padding: 20px 0;
+            line-height: 1;
+        }
+
+        .big-number .sub {
+            font-size: 14px;
+            font-weight: 400;
+            color: #888;
+            margin-top: 8px;
+            display: block;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 200px;
+        }
+
+        .slo-info {
+            display: flex;
+            gap: 12px;
+            margin-top: 12px;
+            flex-wrap: wrap;
+        }
+
+        .slo-tag {
+            font-size: 11px;
+            padding: 3px 10px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .slo-tag.pass {
+            background: #0d3320;
+            color: #48cfad;
+            border: 1px solid #1a5c3a;
+        }
+
+        .slo-tag.fail {
+            background: #3d1515;
+            color: #ff6b6b;
+            border: 1px solid #5c1a1a;
+        }
+
+        .error-list {
+            padding: 10px 0;
+        }
+
+        .error-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 12px;
+            background: #0f1117;
+            border-radius: 6px;
+            margin-bottom: 6px;
+            font-size: 13px;
+        }
+
+        .error-row .type {
+            color: #ff6b6b;
+            font-weight: 500;
+        }
+
+        .error-row .count {
+            color: #888;
+        }
+
+        .no-errors {
+            text-align: center;
+            padding: 30px;
+            color: #48cfad;
+            font-size: 14px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 16px;
+            color: #444;
+            font-size: 12px;
+            border-top: 1px solid #1a1d2e;
+        }
+
+        @media (max-width: 900px) {
+            .grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .grid {
+                grid-template-columns: 1fr;
+                padding: 12px;
+            }
+
+            header {
+                padding: 16px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>📊 Day 13 Observability Dashboard</h1>
+        <div class="header-meta">
+            <span id="lastUpdated">Loading...</span>
+            <div class="status-badge">
+                <span class="status-dot"></span>
+                Auto-refresh <span id="countdown">15</span>s
+            </div>
+        </div>
+    </header>
+
+    <div class="grid">
+        <!-- Panel 1: Latency -->
+        <div class="panel">
+            <div class="panel-header">
+                <span class="panel-title">⏱ Latency Percentiles</span>
+                <span class="panel-unit">ms</span>
+            </div>
+            <div class="chart-container">
+                <canvas id="latencyChart"></canvas>
+            </div>
+            <div class="slo-info" id="latencySlo"></div>
+        </div>
+
+        <!-- Panel 2: Traffic -->
+        <div class="panel">
+            <div class="panel-header">
+                <span class="panel-title">📈 Traffic</span>
+                <span class="panel-unit">requests</span>
+            </div>
+            <div class="big-number" id="trafficNumber" style="color: #6c63ff;">
+                0
+                <span class="sub">total requests</span>
+            </div>
+        </div>
+
+        <!-- Panel 3: Error Breakdown -->
+        <div class="panel">
+            <div class="panel-header">
+                <span class="panel-title">🚨 Error Breakdown</span>
+                <span class="panel-unit">count</span>
+            </div>
+            <div id="errorContent" class="no-errors">✅ No errors</div>
+        </div>
+
+        <!-- Panel 4: Cost -->
+        <div class="panel">
+            <div class="panel-header">
+                <span class="panel-title">💰 Cost</span>
+                <span class="panel-unit">USD</span>
+            </div>
+            <div class="chart-container">
+                <canvas id="costChart"></canvas>
+            </div>
+            <div class="slo-info" id="costSlo"></div>
+        </div>
+
+        <!-- Panel 5: Tokens -->
+        <div class="panel">
+            <div class="panel-header">
+                <span class="panel-title">🔤 Tokens In / Out</span>
+                <span class="panel-unit">tokens</span>
+            </div>
+            <div class="chart-container">
+                <canvas id="tokensChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Panel 6: Quality -->
+        <div class="panel">
+            <div class="panel-header">
+                <span class="panel-title">⭐ Quality Score</span>
+                <span class="panel-unit">0-1 scale</span>
+            </div>
+            <div class="chart-container">
+                <canvas id="qualityChart"></canvas>
+            </div>
+            <div class="slo-info" id="qualitySlo"></div>
+        </div>
+    </div>
+
+    <footer>
+        Day 13 Observability Lab &mdash; Team 67 &mdash; Data refreshes every 15 seconds from <code>/metrics</code>
+    </footer>
+
+    <script>
+        // ─── SLO Thresholds ───
+        const SLO = {
+            latency_p95_ms: 3000,
+            daily_cost_usd: 2.5,
+            quality_score_avg: 0.75,
+            error_rate_pct: 2,
+        };
+
+        // ─── Chart Defaults ───
+        Chart.defaults.color = '#888';
+        Chart.defaults.borderColor = '#2a2d3e';
+        Chart.defaults.font.family = 'Inter';
+
+        // ─── 1. Latency Chart ───
+        const latencyChart = new Chart(document.getElementById('latencyChart'), {
+            type: 'bar',
+            data: {
+                labels: ['P50', 'P95', 'P99'],
+                datasets: [{
+                    label: 'Latency',
+                    data: [0, 0, 0],
+                    backgroundColor: ['#6c63ff88', '#ffb84d88', '#ff6b6b88'],
+                    borderColor: ['#6c63ff', '#ffb84d', '#ff6b6b'],
+                    borderWidth: 2,
+                    borderRadius: 6,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    annotation: undefined,
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: '#1f2233' },
+                        ticks: { callback: v => v + 'ms' },
+                    },
+                    x: { grid: { display: false } },
+                },
+            },
+        });
+
+        // ─── 4. Cost Chart ───
+        const costChart = new Chart(document.getElementById('costChart'), {
+            type: 'bar',
+            data: {
+                labels: ['Avg Cost', 'Total Cost'],
+                datasets: [{
+                    label: 'Cost',
+                    data: [0, 0],
+                    backgroundColor: ['#48cfad88', '#6c63ff88'],
+                    borderColor: ['#48cfad', '#6c63ff'],
+                    borderWidth: 2,
+                    borderRadius: 6,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: '#1f2233' },
+                        ticks: { callback: v => '$' + v.toFixed(4) },
+                    },
+                    x: { grid: { display: false } },
+                },
+            },
+        });
+
+        // ─── 5. Tokens Chart ───
+        const tokensChart = new Chart(document.getElementById('tokensChart'), {
+            type: 'bar',
+            data: {
+                labels: ['Tokens In', 'Tokens Out'],
+                datasets: [{
+                    label: 'Tokens',
+                    data: [0, 0],
+                    backgroundColor: ['#4ecdc488', '#ff6b6b88'],
+                    borderColor: ['#4ecdc4', '#ff6b6b'],
+                    borderWidth: 2,
+                    borderRadius: 6,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: '#1f2233' },
+                    },
+                    x: { grid: { display: false } },
+                },
+            },
+        });
+
+        // ─── 6. Quality Chart ───
+        const qualityChart = new Chart(document.getElementById('qualityChart'), {
+            type: 'bar',
+            data: {
+                labels: ['Quality Score'],
+                datasets: [{
+                    label: 'Quality',
+                    data: [0],
+                    backgroundColor: ['#48cfad88'],
+                    borderColor: ['#48cfad'],
+                    borderWidth: 2,
+                    borderRadius: 6,
+                    barPercentage: 0.5,
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        max: 1.0,
+                        grid: { color: '#1f2233' },
+                    },
+                    y: { grid: { display: false } },
+                },
+            },
+        });
+
+        // ─── SLO Badge Helper ───
+        function sloTag(label, value, threshold, lowerIsBetter = true) {
+            const pass = lowerIsBetter ? value <= threshold : value >= threshold;
+            const cls = pass ? 'pass' : 'fail';
+            const icon = pass ? '✅' : '⚠️';
+            return `<span class="slo-tag ${cls}">${icon} ${label}: ${value} (SLO: ${lowerIsBetter ? '≤' : '≥'} ${threshold})</span>`;
+        }
+
+        // ─── Error List Renderer ───
+        function renderErrors(breakdown) {
+            const container = document.getElementById('errorContent');
+            const entries = Object.entries(breakdown);
+            if (entries.length === 0) {
+                container.innerHTML = '<div class="no-errors">✅ No errors</div>';
+                return;
+            }
+            const totalErrors = entries.reduce((sum, [, c]) => sum + c, 0);
+            let html = '<div class="error-list">';
+            for (const [type, count] of entries) {
+                html += `<div class="error-row"><span class="type">${type}</span><span class="count">${count}</span></div>`;
+            }
+            html += `<div class="error-row" style="border-top: 1px solid #2a2d3e; margin-top: 4px; padding-top: 10px;"><span style="color:#e0e0e0;font-weight:600;">Total</span><span style="color:#ff6b6b;font-weight:600;">${totalErrors}</span></div>`;
+            html += '</div>';
+            container.innerHTML = html;
+        }
+
+        // ─── Fetch & Update ───
+        async function fetchMetrics() {
+            try {
+                const res = await fetch('/metrics');
+                const d = await res.json();
+
+                // Panel 1: Latency
+                latencyChart.data.datasets[0].data = [d.latency_p50, d.latency_p95, d.latency_p99];
+                latencyChart.update('none');
+                document.getElementById('latencySlo').innerHTML = sloTag('P95', d.latency_p95 + 'ms', SLO.latency_p95_ms + 'ms', true);
+
+                // Panel 2: Traffic
+                document.getElementById('trafficNumber').innerHTML = `${d.traffic}<span class="sub">total requests</span>`;
+
+                // Panel 3: Errors
+                renderErrors(d.error_breakdown);
+
+                // Panel 4: Cost
+                costChart.data.datasets[0].data = [d.avg_cost_usd, d.total_cost_usd];
+                costChart.update('none');
+                document.getElementById('costSlo').innerHTML = sloTag('Total', '$' + d.total_cost_usd, '$' + SLO.daily_cost_usd, true);
+
+                // Panel 5: Tokens
+                tokensChart.data.datasets[0].data = [d.tokens_in_total, d.tokens_out_total];
+                tokensChart.update('none');
+
+                // Panel 6: Quality
+                qualityChart.data.datasets[0].data = [d.quality_avg];
+                const qColor = d.quality_avg >= SLO.quality_score_avg ? '#48cfad' : '#ff6b6b';
+                qualityChart.data.datasets[0].backgroundColor = [qColor + '88'];
+                qualityChart.data.datasets[0].borderColor = [qColor];
+                qualityChart.update('none');
+                document.getElementById('qualitySlo').innerHTML = sloTag('Avg', d.quality_avg.toFixed(2), SLO.quality_score_avg, false);
+
+                // Header
+                document.getElementById('lastUpdated').textContent = 'Updated: ' + new Date().toLocaleTimeString();
+            } catch (err) {
+                console.error('Failed to fetch /metrics:', err);
+            }
+        }
+
+        // ─── Countdown Timer ───
+        let countdown = 15;
+        setInterval(() => {
+            countdown--;
+            document.getElementById('countdown').textContent = countdown;
+            if (countdown <= 0) {
+                countdown = 15;
+                fetchMetrics();
+            }
+        }, 1000);
+
+        // ─── Initial Load ───
+        fetchMetrics();
+    </script>
+</body>
+
+</html>
