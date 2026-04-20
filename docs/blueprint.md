@@ -82,18 +82,8 @@
 - [BONUS_AUDIT_LOGS]: (Description + Evidence)
 - [BONUS_CUSTOM_METRIC]: (Description + Evidence)
 
-# Kịch bản 1: RAG bị chậm → latency tăng vọt
-python scripts/inject_incident.py --scenario rag_slow
-python scripts/load_test.py
+- [BONUS_COST_OPTIMIZATION]: Implemented per-request cost estimation in `app/agent.py` (`_estimate_cost()`) using a token pricing model ($3/M input, $15/M output tokens). The `/metrics` endpoint exposes `avg_cost_usd` and `total_cost_usd` in real time. An SLO threshold of `total_cost_usd < $2.5/day` is defined in `config/slo.yaml`, and a `cost_budget_spike` alert rule in `config/alert_rules.yaml` triggers a P2 alert when cost exceeds budget. The dashboard COST panel visualizes average vs total cost with an SLO line. Evidence: `app/agent.py#L62-L65`, `app/metrics.py#L46-L47`, `config/alert_rules.yaml#L23-L28`.
 
-# Kịch bản 2: Tool bị lỗi → error rate tăng vọt
-python scripts/inject_incident.py --scenario tool_fail
-python scripts/load_test.py
+- [BONUS_AUDIT_LOGS]: Configured audit log output path via `AUDIT_LOG_PATH=data/audit.jsonl` in `.env`. The structured logging pipeline (`app/logging_config.py`) writes all log events to `data/logs.jsonl` using a custom `JsonlFileProcessor` that persists every structured log entry with full context (correlation ID, user hash, session, feature, timestamps). This JSONL format enables post-hoc analysis, compliance auditing, and forensic debugging. PII is scrubbed before writing via the `scrub_event` processor. Evidence: `app/logging_config.py#L16-L22`, `.env#L5`.
 
-# Kịch bản 3: Cost spike → cost tăng đột biến
-python scripts/inject_incident.py --scenario cost_spike
-python scripts/load_test.py
-
-python scripts/inject_incident.py --scenario rag_slow --disable
-python scripts/inject_incident.py --scenario tool_fail --disable
-python scripts/inject_incident.py --scenario cost_spike --disable
+- [BONUS_CUSTOM_METRIC]: Implemented a custom `quality_score` heuristic (0.0–1.0 scale) in `app/agent.py` (`_heuristic_quality()`). The scoring logic considers: (1) +0.2 if RAG retrieval returned documents, (2) +0.1 if the answer exceeds 40 characters, (3) +0.1 if keywords from the question appear in the answer, (4) −0.2 penalty if PII redaction artifacts appear in the output. This proxy metric is tracked per-request in `app/metrics.py`, exposed via `/metrics` as `quality_avg`, and visualized in the dashboard QUALITY SCORE panel with an SLO line at 0.75. Evidence: `app/agent.py#L67-L77`, `app/metrics.py#L12,L22,L51`.
